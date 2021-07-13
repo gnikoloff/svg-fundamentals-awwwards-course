@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02 - SVG Rendering Fundamentals</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>02 - SVG Rendering Fundamentals</h1>
+  </header>
+  
+  <div id="container">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="600"
+      height="2400"
+      viewBox="0 0 600 2400"
+    >
+
+      <!-- The children of defs will not be rendered on the screen -->
+      <defs>
+
+        <linearGradient id="ellipse-fill"  gradientTransform="rotate(45)">
+          <stop offset="0" stop-color="red" />
+          <stop offset="100%" stop-color="blue" />
+        </linearGradient>
+
+
+        <linearGradient id="ellipse-stroke">
+          <stop offset="0" stop-color="pink" stop-opacity="100%" />
+          <stop offset="100%" stop-color="brown" stop-opacity="100%" />
+        </linearGradient>
+
+        <marker id="chart-marker" viewBox="0 0 10 10" refX="7.5" refY="7.5" markerWidth="5" markerHeight="5">
+          <rect x="5" y="5" width="5" height="5" fill="orange" />
+        </marker>
+
+      </defs>
+
+      <text x="50" y="50" fontSize="18" fontFamily="Helvetica">Rectangle</text>
+      <rect x="50" y="80" width="100" height="100" fill="rgba(255, 255, 0, 1)" stroke="blue" stroke-width="4" stroke-dasharray="10 4 1 6" />
+
+      <text x="50" y="240" fontSize="18" fontFamily="Helvetica">Circle</text>
+      <circle cx="100" cy="320" r="60" fill="red" stroke="green" stroke-width="10" />
+
+      <text x="50" y="440" fontSize="18" fontFamily="Helvetica">Line</text>
+      <line x1="30" y1="460" x2="300" y2="480" stroke="pink" stroke-width="12" stroke-linecap="round" />
+
+      <text x="50" y="550" fontSize="18" fontFamily="Helvetica">Polyline</text>
+      <polyline points="30, 570 300, 590 350, 550 400, 600 450, 510 500, 550" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke="pink" fill="none" />
+
+      <text x="50" y="650" fontSize="18" fontFamily="Helvetica">Ellipse</text>
+      <ellipse cx="180" cy="700" rx="120" ry="20" fill="url(#ellipse-fill)" stroke="url(#ellipse-stroke)" stroke-width="10" />
+
+      <text class="label" x="50" y="780" fontSize="18" fontFamily="Helvetica">Marker</text>
+
+      <polyline
+        points="30, 800 150, 850 300, 820 450, 850"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke="#111"
+        marker-start="url(#chart-marker)"
+        marker-mid="url(#chart-marker)"
+        marker-end="url(#chart-marker)"
+        fill="none"
+      />
+
+      <text x="50" y="920" fontSize="18" fontFamily="Helvetica">Path</text>
+      <!-- 
+        Quadratic curve commands
+        x1 = 270
+        y1 = 1100
+        cpx = 370
+        cpx - x1 = 370 - 270 = 100
+        cpy = 1000
+        cpy - x1 = 1000 - 1100 = -100
+        x2 = 470
+        x2 - x1 = 470 - 270 = 200
+        y2 = 1100
+        y2 - y1 = 1100 - 1100 = 0
+       -->
+
+       <!--
+          Cubic curve commands
+          x1 = 320
+          y1 = 1050
+
+          width = x2 - x1 = 100
+          height = y2 - y1 = 0
+
+          cpx1 = 370
+          cpy1 = 1010
+
+          cpx2 = 400
+          cpy2 = 1090
+
+          x2 = 420
+          y2 = 1050
+       -->
+      <path
+        d="
+          M 50, 950
+          l 20, 20
+          h 200
+          v 50
+          q 50, -50 100, 0
+          C 390, 980 400, 1060 420, 1020
+        "
+        
+        stroke-width="3"
+        stroke="#666"
+        fill="none"
+      />
+
+      <text x="50" y="1100" fontSize="18" fontFamily="Helvetica">Image</text>
+      <image href="https://picsum.photos/400/200" x="50" y="1130" width="400" height="200" />
+
+      <text x="50" y="1390" fontSize="18" fontFamily="Helvetica">tspan</text>
+      <text x="50" y="1450" font-size="24">
+        <tspan font-family="fantasy" fill="red">This</tspan> <tspan font-family="monospace" fill="blue">is my</tspan> cool <tspan font-size="40" font-family="serif" fill="url(#ellipse-fill)">text</tspan>
+      </text>
+
+      <text x="50" y="1520" fontSize="18" fontFamily="Helvetica">Group</text>
+      <g stroke="blue" fill="white" stroke-width="10">
+        <circle cx="100" cy="1600" r="50" />
+        <circle cx="150" cy="1620" r="50" />
+      </g>
+
+      <text x="50" y="1740" fontSize="18" fontFamily="Helvetica">TextPath</text>
+      <!--
+        x1 = 50
+        y1 = 1780
+        
+        cp1x = 40
+        cp1y = -40
+
+        cp2x = 80
+        cp2y = 40
+
+        x2 = 100
+        y2 = 0
+
+      -->
+      <path
+        id="path-for-text"
+        d="
+          M 50, 1800
+          c 160, -80 320, 80 400, 0
+        "
+        stroke="blue"
+        fill="none"
+      />
+
+      <text>
+        <textPath startOffset="15%" href="#path-for-text">
+          Quick brown fox jumps over the lazy dog.
+        </textPath>
+      </text>
+
+      <text x="50" y="1900" fontSize="18" fontFamily="Helvetica">Foreign Object</text>
+      <foreignObject x="50" y="1920" width="400" height="480">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          
+          <h1>This is a headline</h1>
+          <p>Hello, this is paragraph text</p>
+          <hr />
+          <div>
+            <h4>This is HTML content embedded in SVG</h4>
+          </div>
+          <video src="https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4" autoplay muted loop />
+        </div>
+      </foreignObject>
+
+    </svg>
+  </div>
+
+</body>
+</html>
