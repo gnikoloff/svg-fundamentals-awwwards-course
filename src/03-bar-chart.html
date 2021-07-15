@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 - Bar chart</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>03 - Bar chart</h1>
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+      
+    </svg>
+  </div>
+
+  <script>
+
+    const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+
+    const SVG_HORIZONTAL_LINES_COUNT = 4
+
+    const svg = document.getElementById('chart')
+    const svgDimensions = svg.getBoundingClientRect()
+
+    const svgRealWidth = svgDimensions.width
+    const svgRealHeight = svgDimensions.height
+
+    const chartPaddingTop = 50
+    const chartPaddingRight = 50
+    const chartPaddingBottom = 50
+    const chartPaddingLeft = 80
+
+    const svgHeight = svgRealHeight - chartPaddingTop - chartPaddingBottom
+    const svgWidth = svgRealWidth - chartPaddingLeft - chartPaddingRight
+
+    fetch('http://localhost:1111/colors')
+      .then(res => res.json())
+      .then(res => {
+        const highestNumber = Math.max(...res.map(item => item.value))
+
+        const total = res.reduce((acc, item) => acc + item.value, 0)
+        const average = total / res.length
+        const normalisedAverage = average / highestNumber
+        const normalisedY = svgRealHeight - normalisedAverage * svgHeight
+
+        // Render masking rectangles
+        const maskAboveAverage = document.createElementNS(SVG_NAMESPACE, 'mask')
+        maskAboveAverage.setAttribute('id', 'maskAboveAverage')
+        svg.appendChild(maskAboveAverage)
+
+        const rectAboveAverage = document.createElementNS(SVG_NAMESPACE, 'rect')
+        rectAboveAverage.setAttribute('x', 0)
+        rectAboveAverage.setAttribute('y', 0)
+        rectAboveAverage.setAttribute('width', svgRealWidth)
+        rectAboveAverage.setAttribute('height', normalisedY)
+        rectAboveAverage.setAttribute('fill', 'white')
+        maskAboveAverage.appendChild(rectAboveAverage)
+
+        const maskBelowAverage = document.createElementNS(SVG_NAMESPACE, 'mask')
+        maskBelowAverage.setAttribute('id', 'maskBelowAverage')
+        svg.appendChild(maskBelowAverage)
+
+        const rectBelowAverage = document.createElementNS(SVG_NAMESPACE, 'rect')
+        rectBelowAverage.setAttribute('x', 0)
+        rectBelowAverage.setAttribute('y', normalisedY)
+        rectBelowAverage.setAttribute('width', svgRealWidth)
+        rectBelowAverage.setAttribute('height', svgRealHeight - normalisedY)
+        rectBelowAverage.setAttribute('fill', 'white')
+        maskBelowAverage.appendChild(rectBelowAverage)
+
+
+
+        // Render horizontal spacing lines and respective numeric values
+        new Array(SVG_HORIZONTAL_LINES_COUNT).fill(null).map((_, i) => {
+          const horizontalLine = document.createElementNS(SVG_NAMESPACE, 'line')
+          const ySpacing = svgHeight / SVG_HORIZONTAL_LINES_COUNT
+          const y = i * ySpacing + chartPaddingTop
+          horizontalLine.setAttribute('x1', 0)
+          horizontalLine.setAttribute('y1', y)
+          horizontalLine.setAttribute('x2', svgRealWidth)
+          horizontalLine.setAttribute('y2', y)
+          horizontalLine.setAttribute('stroke', '#000')
+          horizontalLine.setAttribute('stroke-opacity', 0.1)
+          svg.appendChild(horizontalLine)
+
+          const valueToDisplay = highestNumber - highestNumber * (i / SVG_HORIZONTAL_LINES_COUNT)
+
+          const valueText = document.createElementNS(SVG_NAMESPACE, 'text')
+          valueText.setAttribute('x', 10)
+          valueText.setAttribute('y', y - 5)
+          valueText.setAttribute('font-size', 12)
+          valueText.textContent = valueToDisplay
+          svg.appendChild(valueText)
+        })
+
+        const horizontalLineLast = document.createElementNS(SVG_NAMESPACE, 'line')
+        horizontalLineLast.setAttribute('x1', 0)
+        horizontalLineLast.setAttribute('y1', svgRealHeight - chartPaddingBottom)
+        horizontalLineLast.setAttribute('x2', svgRealWidth)
+        horizontalLineLast.setAttribute('y2', svgRealHeight - chartPaddingBottom)
+        horizontalLineLast.setAttribute('stroke', 'brown')
+        svg.appendChild(horizontalLineLast)
+
+        const valueText = document.createElementNS(SVG_NAMESPACE, 'text')
+        valueText.setAttribute('x', 10)
+        valueText.setAttribute('y', svgRealHeight - chartPaddingBottom - 5)
+        valueText.setAttribute('font-size', 12)
+        valueText.textContent = 0
+        svg.appendChild(valueText)
+
+
+        // Render bars and legends
+        const orderedItems = [...res]
+          .sort((a, b) => b.value - a.value)
+          .forEach((item, i, array) => {
+            const rectAboveAverage = document.createElementNS(SVG_NAMESPACE, 'rect')
+            const xSpacing = svgWidth / array.length
+            const rectWidth = 30
+            const normalisedValue = item.value / highestNumber
+            const rectHeight = normalisedValue * svgHeight
+
+            const x = i * xSpacing + xSpacing / 2 - rectWidth / 2 + chartPaddingLeft
+            const y = svgHeight - rectHeight + chartPaddingTop
+            rectAboveAverage.setAttribute('x', x)
+            rectAboveAverage.setAttribute('y', y)
+            rectAboveAverage.setAttribute('width', rectWidth)
+            rectAboveAverage.setAttribute('height', rectHeight)
+            rectAboveAverage.setAttribute('fill', item.color)
+            rectAboveAverage.setAttribute('fill-opacity', 0.3)
+            rectAboveAverage.setAttribute('stroke', item.color)
+            rectAboveAverage.setAttribute('stroke-width', 3)
+            rectAboveAverage.setAttribute('mask', 'url(#maskAboveAverage)')
+            svg.appendChild(rectAboveAverage)
+
+            const rectBelowAverage = rectAboveAverage.cloneNode()
+            rectBelowAverage.setAttribute('mask', 'url(#maskBelowAverage)')
+            rectBelowAverage.setAttribute('fill-opacity', 1)
+            svg.appendChild(rectBelowAverage)
+
+
+            const labelText = document.createElementNS(SVG_NAMESPACE, 'text')
+            labelText.setAttribute('x', x + rectWidth / 2)
+            labelText.setAttribute('y', svgRealHeight - chartPaddingBottom / 2)
+            labelText.setAttribute('text-anchor', 'middle')
+            labelText.setAttribute('font-size', 10)
+            labelText.setAttribute('fill', '#000')
+            labelText.setAttribute('opacity', 0.82)
+            labelText.textContent = item.label.toUpperCase()
+            svg.appendChild(labelText)
+          })
+
+
+        
+        // Render average horizontal axis
+        const averageLineAxis = document.createElementNS(SVG_NAMESPACE, 'line')
+        averageLineAxis.setAttribute('x1', 0)
+        averageLineAxis.setAttribute('y1', normalisedY)
+        averageLineAxis.setAttribute('x2', svgRealWidth)
+        averageLineAxis.setAttribute('y2', normalisedY)
+        averageLineAxis.setAttribute('stroke', '#000')
+        averageLineAxis.setAttribute('opacity', 0.25)
+        averageLineAxis.setAttribute('stroke-dasharray', '5 4')
+        svg.appendChild(averageLineAxis)
+
+      })
+
+  </script>
+
+</body>
+</html>
