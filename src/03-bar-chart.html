@@ -115,7 +115,8 @@
         horizontalLineLast.setAttribute('y1', svgRealHeight - chartPaddingBottom)
         horizontalLineLast.setAttribute('x2', svgRealWidth)
         horizontalLineLast.setAttribute('y2', svgRealHeight - chartPaddingBottom)
-        horizontalLineLast.setAttribute('stroke', 'brown')
+        horizontalLineLast.setAttribute('stroke', '#000')
+        horizontalLineLast.setAttribute('stroke-opacity', 0.1)
         svg.appendChild(horizontalLineLast)
 
         const valueText = document.createElementNS(SVG_NAMESPACE, 'text')
