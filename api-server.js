@@ -69,4 +69,21 @@ app.get('/trees', (req, res) => {
   res.json(arr)
 })
 
+app.get('/favorite-movies', (req, res) => {
+  const getRandCount = (max = 30) => 1 + Math.round(Math.random() * max)
+  let categories = [
+    { color: '#e74c3c', name: 'Comedy', count: getRandCount() },
+    { color: '#d35400', name: 'Action', count: getRandCount() },
+    { color: '#f39c12', name: 'Romance', count: getRandCount() },
+    { color: '#2980b9', name: 'Drama', count: getRandCount() },
+    { color: '#16a085', name: 'SciFi', count: getRandCount() },
+  ]
+  const totalMoviesCount = categories.reduce((acc, { count }) => acc + count, 0)
+  categories = categories.map(category => ({
+    ...category,
+    share: category.count / totalMoviesCount
+  }))
+  res.json(categories)
+})
+
 app.listen(PORT, () => console.log('\x1b[33m%s\x1b[0m', `\nAPI is listening on: http://localhost:${PORT}\n\n`))

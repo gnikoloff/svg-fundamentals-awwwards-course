@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 - Pie chart</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <h1>06 - Pie chart</h1>
+    <a href="/">Go Back</a>
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+    <defs>
+    </defs>
+    </svg>
+  </div>
+  
+  <script>
+
+    const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+    const MARKER_RADIUS = 8
+
+    const svg = document.getElementById('chart')
+    const svgDimensions = svg.getBoundingClientRect()
+
+    const svgRealWidth = svgDimensions.width
+    const svgRealHeight = svgDimensions.height
+
+    const pieChartRadius = svgRealWidth * 0.45
+  
+
+    const centerX = svgRealWidth / 2
+    const centerY = svgRealHeight / 2
+    const radius = svgRealWidth / 2
+
+    fetch('http://localhost:1111/favorite-movies')
+      .then(res => res.json())
+      .then(movieGenres => {
+        let accumulatedAngle = 0
+        // render pie chart slices
+        movieGenres.forEach(({ color, name, count, share }, i) => {
+          const path = document.createElementNS(SVG_NAMESPACE, 'path')
+          const angleStep = share * Math.PI * 2
+          const { definition } = describeArc(centerX, centerY, radius, accumulatedAngle, accumulatedAngle + angleStep)
+          path.setAttribute('d', definition)
+          path.setAttribute('fill', color)
+          svg.appendChild(path)
+          accumulatedAngle += angleStep
+        })
+
+        accumulatedAngle = 0
+        // render text labels for each slice
+        movieGenres.forEach(({ color, name, count, share }, i) => {
+          const text = document.createElementNS(SVG_NAMESPACE, 'text')
+          const angleStep = share * Math.PI * 2
+          const { endX, endY } = describeArc(centerX, centerY, radius * 0.5, accumulatedAngle, accumulatedAngle + angleStep / 2)
+          text.setAttribute('x', endX)
+          text.setAttribute('y', endY)
+          text.setAttribute('fill', 'white')
+          text.setAttribute('text-anchor', 'middle')
+          text.setAttribute('font-size', 16)
+          text.textContent = `${name} (${count})`
+          svg.appendChild(text)
+          accumulatedAngle += angleStep
+        })
+
+      })
+    // const path = document.createElementNS(SVG_NAMESPACE, 'path')
+    // path.setAttribute('d', describeArc(svgRealWidth * 0.5, svgRealHeight * 0.5, 100, 0, Math.PI * 1.5))
+    // svg.appendChild(path)
+
+    // (rx ry angle large-arc-flag sweep-flag x y)+
+    function describeArc (x, y, radius, startAngle, endAngle) {
+      const centerX = x
+      const centerY = y
+      const startX = centerX + Math.cos(startAngle) * radius
+      const startY = centerY + Math.sin(startAngle) * radius
+      const endX = centerX + Math.cos(endAngle) * radius
+      const endY = centerY + Math.sin(endAngle) * radius
+      const angle = 0
+      const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1
+      const sweepFlag = 1
+      const definition = `
+        M ${x}, ${y}
+        L ${startX}, ${startY}
+        A ${radius}, ${radius}, ${angle}, ${largeArcFlag}, ${sweepFlag}, ${endX}, ${endY}
+        z
+      `
+      return {
+        endX,
+        endY,
+        definition
+      }
+    }
+
+  </script>
+
+</body>
+</html>
