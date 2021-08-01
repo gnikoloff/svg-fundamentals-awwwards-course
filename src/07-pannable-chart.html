@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2.2 - Line chart</title>
+  <title>2.5 - Pannable chart</title>
   <link rel="stylesheet" href="example-styles.css" />
 
 </head>
@@ -12,8 +12,8 @@
 
   <header id="header">
     <a href="/">Go Back</a>
-    <h1>2.2 - Line chart</h1>
-    <p>Shows the stock value of a company over a period of time</p>
+    <h1>2.5 - Pannable chart</h1>
+    <p>Shows how to interact with and pan a SVG element</p>
   </header>
   
   <div id="container">
@@ -27,7 +27,20 @@
 
       viewBox="0 0 600 600"
     >
+      <defs>
+        <style>
+          #chart {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
 
+            cursor: grab;
+          }
+          #chart.dragging {
+            cursor: grabbing;
+          }
+        </style>
+      </defs>
     </svg>
   </div>
   
@@ -40,8 +53,13 @@
     const svg = document.getElementById('chart')
     const svgDimensions = svg.getBoundingClientRect()
 
+    const svgOffsetTop = svgDimensions.top
+    const svgOffsetLeft = svgDimensions.left
+
     const svgRealWidth = svgDimensions.width
     const svgRealHeight = svgDimensions.height
+
+    const svgScrollableWidth = svgRealWidth * 6
 
     const chartPaddingTop = 50
     const chartPaddingRight = 40
@@ -49,9 +67,56 @@
     const chartPaddingLeft = 80
 
     const svgHeight = svgRealHeight - chartPaddingTop - chartPaddingBottom
-    const svgWidth = svgRealWidth - chartPaddingLeft - chartPaddingRight
+    const svgWidth = svgScrollableWidth - chartPaddingLeft - chartPaddingRight
 
-    const defs = document.createElementNS(SVG_NAMESPACE, 'defs')
+    let oldMouseX = 0
+    let isMouseDown = false
+    let panX = 0
+
+
+
+    const pannableGroup = document.createElementNS(SVG_NAMESPACE, 'svg')
+    pannableGroup.setAttribute('viewBox', '0 0 600 600')
+    svg.appendChild(pannableGroup)
+
+    svg.addEventListener('mousedown', e => {
+      const x = e.pageX - svgOffsetLeft
+      oldMouseX = x
+      isMouseDown = true
+      svg.classList.add('dragging')
+    })
+
+    svg.addEventListener('mousemove', e => {
+      if (!isMouseDown) {
+        return
+      }
+      const x = e.pageX - svgOffsetLeft
+      const diffX = x - oldMouseX
+      panX += diffX * -1
+
+      const leftEdge = 0
+      const rightEdge = svgScrollableWidth - svgRealWidth
+
+      if (panX < leftEdge) {
+        panX = leftEdge
+      } else if (panX > rightEdge) {
+        panX = rightEdge
+      }
+      pannableGroup.setAttribute('viewBox', `${panX} 0 600 600`)
+      oldMouseX = x
+    })
+
+    svg.addEventListener('mouseup', () => {
+      isMouseDown = false
+      svg.classList.remove('dragging')
+    })
+
+    svg.addEventListener('mouseleave', () => {
+      isMouseDown = false
+      svg.classList.remove('dragging')
+    })
+
+    const defs = svg.getElementsByTagName('defs')[0]
     svg.appendChild(defs)
 
     const marker = document.createElementNS(SVG_NAMESPACE, 'marker')
@@ -70,7 +135,7 @@
 
     defs.appendChild(marker)
 
-    fetch('http://localhost:1111/stocks')
+    fetch('http://192.168.2.105:1111/stocks?count=500')
       .then(res => res.json())
       .then(res => {
         const highestNumber = Math.max(...res.map(entry => entry.value))
@@ -87,7 +152,7 @@
           const y = (i) * ySpacing + chartPaddingTop
   
           const x1 = 0
-          const x2 = svgRealWidth
+          const x2 = svgScrollableWidth
 
           line.setAttribute('x1', x1)
           line.setAttribute('y1', y)
@@ -115,7 +180,7 @@
         const lastHorizontalLine = document.createElementNS(SVG_NAMESPACE, 'line')
         lastHorizontalLine.setAttribute('x1', 0)
         lastHorizontalLine.setAttribute('y1', svgRealHeight - chartPaddingBottom)
-        lastHorizontalLine.setAttribute('x2', svgRealWidth)
+        lastHorizontalLine.setAttribute('x2', svgScrollableWidth)
         lastHorizontalLine.setAttribute('y2', svgRealHeight - chartPaddingBottom)
         lastHorizontalLine.setAttribute('stroke', '#000')
         lastHorizontalLine.setAttribute('stroke-opacity', 0.12)
@@ -152,11 +217,11 @@
         path.setAttribute('marker-start', 'url(#circle-marker)')
         path.setAttribute('marker-mid', 'url(#circle-marker)')
         path.setAttribute('marker-end', 'url(#circle-marker)')
-        svg.appendChild(path)
+        pannableGroup.appendChild(path)
 
         const labelGroup = document.createElementNS(SVG_NAMESPACE, 'g')
         labelGroup.setAttribute('id', 'label-group')
-        svg.appendChild(labelGroup)
+        pannableGroup.appendChild(labelGroup)
 
         const firstDateLabel = document.createElementNS(SVG_NAMESPACE, 'text')
         firstDateLabel.setAttribute('x', chartPaddingLeft)
@@ -169,7 +234,7 @@
 
         const verticalLinesGroup = document.createElementNS(SVG_NAMESPACE, 'g')
         verticalLinesGroup.setAttribute('id', 'vertical-lines-group')
-        svg.appendChild(verticalLinesGroup)
+        pannableGroup.appendChild(verticalLinesGroup)
 
         const firstVerticalLine = document.createElementNS(SVG_NAMESPACE, 'line')
         firstVerticalLine.setAttribute('x1', chartPaddingLeft)
@@ -180,7 +245,7 @@
         firstVerticalLine.setAttribute('stroke-opacity', 0.08)
         verticalLinesGroup.appendChild(firstVerticalLine)
 
-        const datesCount = 4
+        const datesCount = 16
         new Array(datesCount).fill(null).forEach((_, i, array) => {
           const xSpacing = svgWidth / array.length
           const x = (i + 1) * xSpacing + xSpacing / 2

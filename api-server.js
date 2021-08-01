@@ -46,7 +46,7 @@ app.get('/colors', (req, res) => {
 })
 
 app.get('/stocks', (req, res) => {
-  const pointsCount = 50
+  const pointsCount = req.query.count ? parseInt(req.query.count, 10) : 50
   const simplex = new SimplexNoise()
   const todayDate = new Date()
   const arr = new Array(pointsCount).fill(null).map((_, i) => {
