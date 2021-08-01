@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05 - Scatter point chart</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>05 - Scatter point chart</h1>
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+    <defs>
+      <style>
+      </style>
+    </defs>
+    </svg>
+  </div>
+  
+  <script>
+
+    const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+    const MARKER_RADIUS = 8
+
+    const svg = document.getElementById('chart')
+    const svgDimensions = svg.getBoundingClientRect()
+
+    const svgRealWidth = svgDimensions.width
+    const svgRealHeight = svgDimensions.height
+
+    const chartPaddingTop = 50
+    const chartPaddingRight = 40
+    const chartPaddingBottom = 100
+    const chartPaddingLeft = 100
+
+    const svgHeight = svgRealHeight - chartPaddingTop - chartPaddingBottom
+    const svgWidth = svgRealWidth - chartPaddingLeft - chartPaddingRight
+
+    const NUMBER_OF_VERTICAL_LINES = 10
+    const NUMBER_OF_HORIZONTAL_LINES = 10
+
+    const svgCircles = []
+
+    fetch('http://localhost:1111/trees')
+      .then(res => res.json())
+      .then(treesData => {
+
+        const hoverTextLabel = document.createElementNS(SVG_NAMESPACE, 'text')
+        hoverTextLabel.setAttribute('x', svgRealWidth - 170)
+        hoverTextLabel.setAttribute('y', 30)
+        hoverTextLabel.setAttribute('text-anchor', 'right')
+        hoverTextLabel.textContent = 'Hover over a point'
+        svg.appendChild(hoverTextLabel)
+        
+
+        svg.addEventListener('mousemove', e => {
+          if (e.target.nodeName === 'circle') {
+            const circleIndx = svgCircles.indexOf(e.target)
+            const {
+              height,
+              diameter
+            } = treesData[circleIndx]
+            hoverTextLabel.textContent = `height: ${Math.round(height * 100) / 100}, radius: ${Math.round(diameter * 100) / 100}`
+            hoverTextLabel.setAttribute('x', svgRealWidth - 210)
+          } else {
+            hoverTextLabel.textContent = 'Hover over a point'
+            hoverTextLabel.setAttribute('x', svgRealWidth - 170)
+          }
+        })
+
+        const highestDiameter = Math.max(...treesData.map(({ diameter }) => diameter))
+        const highestHeight = Math.max(...treesData.map(({ height }) => height))
+
+        // Vertical lines
+        const vertLineStepX = svgWidth / NUMBER_OF_VERTICAL_LINES
+        for (let i = 0; i <= NUMBER_OF_VERTICAL_LINES; i++) {
+          const x1 = i * vertLineStepX + chartPaddingLeft
+          const y1 = chartPaddingTop
+          const x2 = x1
+          const y2 = svgHeight + chartPaddingTop
+
+          const line = document.createElementNS(SVG_NAMESPACE, 'line')
+          line.setAttribute('x1', x1)
+          line.setAttribute('y1', y1)
+          line.setAttribute('x2', x2)
+          line.setAttribute('y2', y2)
+          line.setAttribute('stroke', 'rgba(0, 0, 0, 0.12)')
+          svg.appendChild(line)
+
+          const lineNum = highestDiameter * (i / NUMBER_OF_HORIZONTAL_LINES)
+          const labelText = Math.round(lineNum * 100) / 100
+          const text = document.createElementNS(SVG_NAMESPACE, 'text')
+          text.setAttribute('x', x1)
+          text.setAttribute('y', svgHeight + 20 + chartPaddingTop)
+          text.setAttribute('font-size', 12)
+          text.setAttribute('text-anchor', 'middle')
+          text.textContent = labelText
+          svg.appendChild(text)
+        }
+
+        // Horizontal lines
+        const horizontalLineStepY = svgHeight / NUMBER_OF_HORIZONTAL_LINES
+        for (let i = 0; i <= NUMBER_OF_HORIZONTAL_LINES; i++) {
+          const x1 = chartPaddingLeft
+          const y1 = i * horizontalLineStepY + chartPaddingTop
+          const x2 = svgWidth + chartPaddingLeft
+          const y2 = y1
+
+          const line = document.createElementNS(SVG_NAMESPACE, 'line')
+          line.setAttribute('x1', x1)
+          line.setAttribute('y1', y1)
+          line.setAttribute('x2', x2)
+          line.setAttribute('y2', y2)
+          line.setAttribute('stroke', 'rgba(0, 0, 0, 0.12)')
+          svg.appendChild(line)
+
+          const lineNum = highestHeight * (1 - i / NUMBER_OF_HORIZONTAL_LINES)
+          const labelText = Math.round(lineNum * 100) / 100
+          const text = document.createElementNS(SVG_NAMESPACE, 'text')
+          text.setAttribute('x', chartPaddingLeft - 20)
+          text.setAttribute('y', y1)
+          text.setAttribute('font-size', 12)
+          text.setAttribute('text-anchor', 'middle')
+          text.textContent = labelText
+          svg.appendChild(text)
+        }
+
+        // Points
+        treesData.forEach(({ diameter, height }, i) => {
+          const normalisedDiameter = diameter / highestDiameter
+          const normalisedHeight = height / highestHeight
+          const x = normalisedDiameter * svgWidth + chartPaddingLeft
+          const y = svgHeight - normalisedHeight * svgHeight + chartPaddingTop
+          const circle = document.createElementNS(SVG_NAMESPACE, 'circle')
+          circle.setAttribute('cx', x)
+          circle.setAttribute('cy', y)
+          circle.setAttribute('r', 5)
+          circle.setAttribute('fill', 'blue')
+          svg.appendChild(circle)
+          
+          svgCircles.push(circle)
+        })
+
+        // Legend labels
+        const horLabelLegend = document.createElementNS(SVG_NAMESPACE, 'text')
+        horLabelLegend.setAttribute('x', chartPaddingLeft)
+        horLabelLegend.setAttribute('y', svgRealHeight - 30)
+        horLabelLegend.setAttribute('font-style', 'italic')
+        horLabelLegend.textContent = 'Tree diameter'
+        svg.appendChild(horLabelLegend)
+
+        const vertLabelLegend = document.createElementNS(SVG_NAMESPACE, 'text')
+        vertLabelLegend.setAttribute('x', 40)
+        vertLabelLegend.setAttribute('y', svgRealHeight - chartPaddingBottom)
+        vertLabelLegend.setAttribute('transform-origin', `${40} ${svgRealHeight - chartPaddingBottom}`)
+        vertLabelLegend.setAttribute('transform', 'rotate(-90)')
+        vertLabelLegend.setAttribute('font-style', 'italic')
+        vertLabelLegend.textContent = 'Tree height'
+        svg.appendChild(vertLabelLegend)
+
+      })
+
+  </script>
+
+</body>
+</html>

@@ -60,4 +60,13 @@ app.get('/stocks', (req, res) => {
   res.json(arr)
 })
 
+app.get('/trees', (req, res) => {
+  const pointsCount = 50
+  const arr = new Array(pointsCount).fill(null).map((_, i) => {
+    const tree = { diameter: Math.random() * 5, height: Math.random() * 8 }
+    return tree
+  })
+  res.json(arr)
+})
+
 app.listen(PORT, () => console.log('\x1b[33m%s\x1b[0m', `\nAPI is listening on: http://localhost:${PORT}\n\n`))
