@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3.1 - Interactive Widget</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>3.1 - Interactive Widget</h1>
+    <p>Uber simple drawing app</p>
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+      <defs>
+        <style>
+          #chart {
+            user-select: none;
+          }
+          #top-bar text {
+            font-family: Arial, Helvetica, sans-serif;
+            fill: #888;
+          }
+          .drawing-control {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+          }
+          .drawing-control.active {
+            transform: scale(1.3);
+          }
+        </style>
+        <!-- no color pattern -->
+        <pattern
+          id="no-color"
+          viewBox="0 0 20 20"
+          width="100%"
+          height="100%"
+          patternUnits="objectBoundingBox"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            fill="white"
+          />
+          <line
+            x1="0"
+            y1="0"
+            x2="20"
+            y2="20"
+            stroke="red"
+            stroke-width="1"
+          />
+        </pattern>
+        <!-- line width patterns -->
+        <pattern
+          id="small-line-width"
+          viewBox="0 0 20 20"
+          width="100%"
+          height="100%"
+          patternUnits="objectBoundingBox"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            fill="white"
+          />
+          <line
+            x1="0"
+            y1="10"
+            x2="20"
+            y2="10"
+            stroke="#222"
+            stroke-width="1"
+          />
+        </pattern>
+
+        <pattern
+          id="mid-line-width"
+          viewBox="0 0 20 20"
+          width="100%"
+          height="100%"
+          patternUnits="objectBoundingBox"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            fill="white"
+          />
+          <line
+            x1="0"
+            y1="10"
+            x2="20"
+            y2="10"
+            stroke="#222"
+            stroke-width="3"
+          />
+        </pattern>
+
+        <pattern
+          id="big-line-width"
+          viewBox="0 0 20 20"
+          width="100%"
+          height="100%"
+          patternUnits="objectBoundingBox"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            fill="white"
+          />
+          <line
+            x1="0"
+            y1="10"
+            x2="20"
+            y2="10"
+            stroke="#222"
+            stroke-width="6"
+          />
+        </pattern>
+
+        <pattern
+          id="really-big-line-width"
+          viewBox="0 0 20 20"
+          width="100%"
+          height="100%"
+          patternUnits="objectBoundingBox"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            fill="white"
+          />
+          <line
+            x1="0"
+            y1="10"
+            x2="20"
+            y2="10"
+            stroke="#222"
+            stroke-width="9"
+          />
+        </pattern>
+      </defs>
+      <g
+        id="drawing-surface"
+      >
+        <!-- drawings go here -->
+      </g>
+      <g id="top-bar">
+        <!-- fill controls -->
+        <text x="10" y="36">Fill:</text>
+        <rect
+          class="drawing-control active"
+          data-control-for="fill"
+          data-value="transparent"
+          x="45"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="55 30"
+          rx="3"
+          fill="url(#no-color)"
+          stroke="red"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="fill"
+          data-value="#e67e22"
+          x="75"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="85 30"
+          rx="3"
+          fill="#e67e22"
+          stroke="#e67e22"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="fill"
+          data-value="#e74c3c"
+          x="105"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="115 30"
+          rx="3"
+          fill="#e74c3c"
+          stroke="#e74c3c"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="fill"
+          data-value="#2980b9"
+          x="135"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="145 30"
+          rx="3"
+          fill="#2980b9"
+          stroke="#2980b9"
+        />
+        <!-- stroke controls -->
+        <text
+          x="170"
+          y="36"
+        >
+          Stroke:
+        </text>
+        <rect
+          class="drawing-control"
+          data-control-for="stroke"
+          data-value="transparent"
+          x="230"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="240 30"
+          rx="3"
+          fill="url(#no-color)"
+          stroke="red"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="stroke"
+          data-value="#e67e22"
+          x="260"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="270 30"
+          rx="3"
+          fill="#e67e22"
+          stroke="#e67e22"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="stroke"
+          data-value="#e74c3c"
+          x="290"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="300 30"
+          rx="3"
+          fill="#e74c3c"
+          stroke="#e74c3c"
+        />
+        <rect
+          class="drawing-control active"
+          data-control-for="stroke"
+          data-value="#2980b9"
+          x="320"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="330 30"
+          rx="3"
+          fill="#2980b9"
+          stroke="#2980b9"
+        />
+        <!-- line width controls -->
+        <text
+          x="355"
+          y="36"
+        >
+          Line Width:
+        </text>
+        <rect
+          class="drawing-control active"
+          data-control-for="line-width"
+          data-value="1"
+          x="445"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="455 30"
+          rx="3"
+          fill="url(#small-line-width)"
+          stroke="#aaa"
+        />
+        <rect
+          class="drawing-control"
+          data-control-for="line-width"
+          data-value="3"
+          x="475"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="485 30"
+          rx="3"
+          fill="url(#mid-line-width)"
+          stroke="#aaa"
+        />
+
+        <rect
+          class="drawing-control"
+          data-control-for="line-width"
+          data-value="6"
+          x="505"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="515 30"
+          rx="3"
+          fill="url(#big-line-width)"
+          stroke="#aaa"
+        />
+
+        <rect
+          class="drawing-control"
+          data-control-for="line-width"
+          data-value="9"
+          x="535"
+          y="20"
+          width="20"
+          height="20"
+          transform-origin="545 30"
+          rx="3"
+          fill="url(#really-big-line-width)"
+          stroke="#aaa"
+        />
+        
+      </g>
+    </svg>
+  </div>
+  <script>
+
+    const STATE = {
+      fill: 'transparent',
+      stroke: 'blue',
+      strokeWidth: 1
+    }
+
+    const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+    const MARKER_RADIUS = 8
+
+    const svg = document.getElementById('chart')
+    const svgDimensions = svg.getBoundingClientRect()
+
+    const svgOffsetTop = svgDimensions.top
+    const svgOffsetLeft = svgDimensions.left
+
+    const svgRealWidth = svgDimensions.width
+    const svgRealHeight = svgDimensions.height
+
+    const pathsEls = []
+
+    const fillColorControls = document.querySelectorAll('[data-control-for="fill"]')
+    const strokeColorControls = document.querySelectorAll('[data-control-for="stroke"]')
+    const lineWidthControls = document.querySelectorAll('[data-control-for="line-width"]')
+    const drawingSurfaceEl = document.getElementById('drawing-surface')
+
+    let isMouseDown = false
+
+    svg.addEventListener('mousedown', e => {
+      if (e.target.nodeName === 'rect') {
+        let controlsNodeList
+        if (e.target.dataset.controlFor === 'fill') {
+          STATE.fill = e.target.dataset.value
+          controlsNodeList = fillColorControls
+        } else if (e.target.dataset.controlFor === 'stroke') {
+          STATE.stroke = e.target.dataset.value
+          controlsNodeList = strokeColorControls
+        } else if (e.target.dataset.controlFor === 'line-width') {
+          STATE.strokeWidth = e.target.dataset.value
+          controlsNodeList = lineWidthControls
+        }
+        for (let i = 0; i < controlsNodeList.length; i++) {
+          const controlRect = controlsNodeList[i]
+          if (controlRect === e.target) {
+            controlRect.classList.add('active')
+          } else {
+            controlRect.classList.remove('active')
+          }
+        }
+      } else {
+        const path = document.createElementNS(SVG_NAMESPACE, 'path')
+        path.setAttribute('fill', STATE.fill)
+        path.setAttribute('stroke', STATE.stroke)
+        path.setAttribute('stroke-width', STATE.strokeWidth)
+        path.setAttribute('stroke-linecap', 'round')
+        path.setAttribute('stroke-linejoin', 'round')
+        pathsEls.push(path)
+        drawingSurfaceEl.appendChild(path)
+        isMouseDown = true
+      }
+    })
+
+    svg.addEventListener('mousemove', e => {
+      if (!isMouseDown) {
+        return
+      }
+      const x = e.pageX - svgOffsetLeft
+      const y = e.pageY - svgOffsetTop
+      const path = pathsEls[pathsEls.length - 1]
+      const d = path.getAttribute('d')
+      let newD = d
+      if (newD) {
+        newD += `L ${x} ${y} `
+      } else {
+        newD = `M ${x} ${y} `
+      }
+      path.setAttribute('d', newD)
+    })
+
+    svg.addEventListener('mouseup', e => {
+      isMouseDown = false
+    })
+
+  </script>
+
+</body>
+</html>
