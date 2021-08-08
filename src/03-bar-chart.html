@@ -50,7 +50,7 @@
     const svgHeight = svgRealHeight - chartPaddingTop - chartPaddingBottom
     const svgWidth = svgRealWidth - chartPaddingLeft - chartPaddingRight
 
-    fetch('http://localhost:1111/colors')
+    fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/colors')
       .then(res => res.json())
       .then(res => {
         const highestNumber = Math.max(...res.map(item => item.value))

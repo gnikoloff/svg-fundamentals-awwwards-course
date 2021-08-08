@@ -4,9 +4,8 @@
   "description": "Repo containing all examples and source code for the SVG Fundamentals AWWWARDS course",
   "main": "index.js",
   "scripts": {
-    "start:api": "nodemon api-server.js",
     "start:frontend": "http-server src -p 4001",
-    "start": "run-p start:api start:frontend"
+    "start": "run-p start:frontend"
   },
   "repository": {
     "type": "git",

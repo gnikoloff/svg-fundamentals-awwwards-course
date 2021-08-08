@@ -135,7 +135,7 @@
 
     defs.appendChild(marker)
 
-    fetch('http://192.168.2.105:1111/stocks?count=500')
+    fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/stocks?count=500')
       .then(res => res.json())
       .then(res => {
         const highestNumber = Math.max(...res.map(entry => entry.value))

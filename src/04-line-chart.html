@@ -70,7 +70,7 @@
 
     defs.appendChild(marker)
 
-    fetch('http://localhost:1111/stocks')
+    fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/stocks')
       .then(res => res.json())
       .then(res => {
         const highestNumber = Math.max(...res.map(entry => entry.value))

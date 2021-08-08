@@ -50,7 +50,7 @@
     const centerY = svgRealHeight / 2
     const radius = svgRealWidth / 2
 
-    fetch('http://localhost:1111/favorite-movies')
+    fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/favorite-movies')
       .then(res => res.json())
       .then(movieGenres => {
         let accumulatedAngle = 0
