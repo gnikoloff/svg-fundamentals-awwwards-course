@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4.1 - CSS Animation</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>4.1 - CSS Animation</h1>
+    <!-- <p>Uber simple drawing app</p> -->
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+      <defs>
+        <style>
+          
+          #animated-rect {
+            animation-name: animateThatRect;
+            animation-duration: 6s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            stroke-dasharray: 240;
+          }
+
+          @keyframes animateThatRect {
+            0%   {
+              stroke: green;
+              stroke-width: 1px;
+              transform: scale(1) rotate(0deg);
+              rx: 0;
+              stroke-dashoffset: 0;
+            }
+            100% {
+              stroke: yellow;
+              stroke-width: 10px;
+              transform: scale(2) rotate(360deg);
+              rx: 10;
+              stroke-dashoffset: 240;
+            }
+          }
+
+          #animated-line-in-pattern {
+            animation: animateThatPattern 2s infinite ease-in-out;
+          }
+
+          @keyframes animateThatPattern {
+            0%   {
+              transform: rotate(0deg);
+              stroke-width: 1;
+            }
+            100% {
+              transform: rotate(360deg);
+              stroke-width: 3;
+            }
+          }
+
+          #transitioned-circle {
+            
+            fill: orange;
+
+            transform: translateX(0) scale(1);
+            transition: r 2s cubic-bezier(0.76, 0, 0.24, 1),
+                        fill 3s cubic-bezier(0.76, 0, 0.24, 1),
+                        transform 2.5s cubic-bezier(0.76, 0, 0.24, 1);
+          }
+
+          #transitioned-circle.transitioned {
+            
+            fill: blue;
+            transform: translateX(150px) scale(2);
+          }
+
+          #path-definition-css-animation {
+            animation: morphPath 3s infinite ease-in-out;
+          }
+
+          @keyframes morphPath {
+            0% {
+              d: path('M 50 450 L 150 450 L 150 550 L 50 550 z');
+            }
+            50% {
+              d: path('M 100 450 L 150 550 L 100 550 L 50 550 z');
+            }
+            100% {
+              d: path('M 50 450 L 150 450 L 150 550 L 50 550 z');
+            }
+          }
+
+        </style>
+
+        <pattern
+          id="css-keyframe-animated-pattern"
+          width="20%"
+          height="20%"
+          viewBox="0 0 40 40"
+          patternUnits="objectBoundingBox"
+        >
+          <line
+            id="animated-line-in-pattern"
+            x1="0"
+            y1="20"
+            x2="40"
+            y2="20"
+            transform-origin="20 20"
+            stroke="red"
+          />
+        </pattern>
+
+      </defs>
+
+      <text x="50" y="50" font-family="Helvetica">
+        <tspan fill="#aaa">1.</tspan>
+        CSS Keyframe Animation
+      </text>
+
+      <rect
+        id="animated-rect"
+        x="80"
+        y="110"
+        width="60"
+        height="60"
+        transform-origin="110 140"
+        fill="url(#css-keyframe-animated-pattern)"
+      />
+      
+      <text x="50" y="220" font-family="Helvetica">
+        <tspan fill="#aaa">2.</tspan>
+        CSS Transitions
+      </text>
+      <text id="click-to-transition-cirlce" x="300" y="220" font-family="Helvetica" font-size="14" fill="#888">
+        Click to transition circle
+      </text>
+
+      <circle
+        id="transitioned-circle"
+        cx="100"
+        cy="300"
+        r="30"
+        transform-origin="115 315"
+      />
+
+      <text x="50" y="390" font-family="Helvetica">
+        <tspan fill="#aaa">3.</tspan>
+        CSS Path Animation
+        <tspan font-weight="600">Chrome only</tspan>
+      </text>
+
+      <path
+        id="path-definition-css-animation"
+        fill="red"
+      />
+
+    </svg>
+  </div>
+  <script>
+
+    const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+    
+    const svg = document.getElementById('chart')
+    const svgDimensions = svg.getBoundingClientRect()
+
+    const svgOffsetTop = svgDimensions.top
+    const svgOffsetLeft = svgDimensions.left
+
+    const svgRealWidth = svgDimensions.width
+    const svgRealHeight = svgDimensions.height
+
+    const cssCircleTransitionToggle = document.getElementById('click-to-transition-cirlce')
+    const circleToTransition = document.getElementById('transitioned-circle')
+
+
+    cssCircleTransitionToggle.addEventListener('click', e => {
+      circleToTransition.classList.toggle('transitioned')
+    })
+    
+  </script>
+
+</body>
+</html>
