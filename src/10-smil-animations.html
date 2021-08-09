@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4.2 - SMIL Animation</title>
+  <link rel="stylesheet" href="example-styles.css" />
+
+</head>
+<body>
+
+  <header id="header">
+    <a href="/">Go Back</a>
+    <h1>4.2 - SMIL Animation</h1>
+    <p>Synchronized Multimedia Integration Language (SMIL, pronounced "smile")</p>
+  </header>
+  
+  <div id="container">
+    <svg
+      id="chart"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+
+      width="600"
+      height="600"
+
+      viewBox="0 0 600 600"
+    >
+      <defs>
+        <linearGradient id="my-gradient" gradientTransform="rotate(90)">
+          <stop offset="0%" stop-color="gold">
+            <animate
+              attributeName="stop-color"
+              values="gold;red;gold;brown;pink;"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop offset="100%" stop-color="red">
+            <animate
+              attributeName="stop-color"
+              values="red;green;red;blue;yellow;"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </stop>
+        </linearGradient>
+      </defs>
+
+      <text fill="#888" x="20" y="30">Transformations + gradient animation (click on rect to toggle)</text>
+
+      <rect
+        x="50"
+        y="50"
+        width="50"
+        height="50"
+        transform-origin="75 75"
+        fill="url(#my-gradient)"
+      >
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          from="0 0"
+          to="400 0"
+          dur="2s"
+          begin="click"
+          additive="sum"
+          fill="freeze"
+        />
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          dur="2s"
+          from="0 0 0"
+          to="360 0 0"
+          additive="sum"
+          begin="click + 1s"
+          fill="freeze"
+        />
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          from="1"
+          to="2"
+          dur="2s"
+          begin="click"
+          additive="sum"
+          fill="freeze"
+        />
+      </rect>
+
+      <text fill="#888" x="20" y="150">
+        Move object along a path
+      </text>
+
+      <path d="M 50 200, c 100, -50 200, 50, 300 0" stroke="blue" fill="none" />
+      <circle cx="0" cy="0" r="10" fill="red">
+        <animateMotion
+          path="M 50 200, c 100, -50 200, 50, 300 0"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+      </circle>
+
+      <text fill="#888" x="20" y="300">
+        Move text along a path
+      </text>
+
+      <path
+        id="text-path"
+        d="M 0 350 c 100, 100 200, -100, 600 0"
+        fill="none"
+        stroke="brown"
+      />
+      <text font-size="28px">
+        <textPath startOffset="-100%" href="#text-path">
+          Text laid out along a path
+          <animate
+            attributeName="startOffset"
+            from="-100%"
+            to="100%"
+            dur="5s"
+            repeatCount="indefinite"
+          />
+        </textPath>
+      </text>
+      
+      <text fill="#888" x="20" y="440">
+        Path morphing
+      </text>
+
+      <path>
+        <animate
+          attributeName="d"
+          values="M 50 450 L 150 450 L 150 550 L 50 550 z;M 100 450 L 150 550 L 100 550 L 50 550 z;M 50 450 L 150 450 L 150 550 L 50 550 z;"
+          dur="4s"
+          repeatCount="indefinite"
+        />
+      </path>
+
+
+    </svg>
+  </div>
+
+</body>
+</html>
