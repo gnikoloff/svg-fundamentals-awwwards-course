@@ -45,3 +45,12 @@ svg {
 .inline-chart {
   border: 1px solid rgba(0, 0, 0, 0.12);
 }
+
+#download-btn {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 10px 16px;
+  border: none;
+  background: #d35400;
+  color: white;
+}
