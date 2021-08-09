@@ -30,3 +30,18 @@ svg {
   margin-bottom: 3rem;
 }
 
+#chart-grid {
+  /* width: 100vw;
+  display: flex;
+  flex-wrap: wrap; */
+}
+
+.inline-chart-holder {
+  margin: 0 2rem 2rem 0;
+  display: inline-block;
+  /* width: 25%; */
+}
+
+.inline-chart {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
