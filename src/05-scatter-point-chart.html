@@ -34,6 +34,8 @@
     </svg>
   </div>
   
+  <div id="spinner"></div>
+  
   <script>
 
     const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
@@ -58,9 +60,13 @@
 
     const svgCircles = []
 
+    const spinnerEl = document.getElementById('spinner')
+
     fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/trees')
       .then(res => res.json())
       .then(treesData => {
+
+        spinnerEl.classList.add('hidden')
 
         const hoverTextLabel = document.createElementNS(SVG_NAMESPACE, 'text')
         hoverTextLabel.setAttribute('x', svgRealWidth - 170)

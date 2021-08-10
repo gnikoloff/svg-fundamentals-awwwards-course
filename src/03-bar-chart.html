@@ -30,6 +30,8 @@
     </svg>
   </div>
 
+  <div id="spinner"></div>
+
   <script>
 
     const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
@@ -50,9 +52,14 @@
     const svgHeight = svgRealHeight - chartPaddingTop - chartPaddingBottom
     const svgWidth = svgRealWidth - chartPaddingLeft - chartPaddingRight
 
+    const spinnerEl = document.getElementById('spinner')
+
     fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/colors')
       .then(res => res.json())
       .then(res => {
+
+        spinnerEl.classList.add('hidden')
+
         const highestNumber = Math.max(...res.map(item => item.value))
 
         const total = res.reduce((acc, item) => acc + item.value, 0)

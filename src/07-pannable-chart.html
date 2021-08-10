@@ -43,6 +43,8 @@
       </defs>
     </svg>
   </div>
+
+  <div id="spinner"></div>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js" integrity="sha512-bwD3VD/j6ypSSnyjuaURidZksoVx3L1RPvTkleC48SbHCZsemT3VKMD39KknPnH728LLXVMTisESIBOAb5/W0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
@@ -135,9 +137,13 @@
 
     defs.appendChild(marker)
 
+    const spinnerEl = document.getElementById('spinner')
+
     fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/stocks?count=500')
       .then(res => res.json())
       .then(res => {
+        spinnerEl.classList.add('hidden')
+        
         const highestNumber = Math.max(...res.map(entry => entry.value))
 
         const horizontalLinesCount = 5

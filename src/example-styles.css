@@ -54,3 +54,29 @@ svg {
   background: #d35400;
   color: white;
 }
+
+#spinner {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+
+  border-radius: 100%;  
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+  transition: opacity 0.2s ease;
+}
+
+#spinner.hidden {
+  opacity: 0;
+}
+
+@keyframes sk-scaleout {
+  0% { 
+    transform: scale(0);
+  } 100% {
+    transform: scale(1.0);
+    opacity: 0;
+  }
+}

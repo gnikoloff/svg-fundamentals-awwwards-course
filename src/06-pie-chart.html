@@ -31,6 +31,8 @@
     </defs>
     </svg>
   </div>
+
+  <div id="spinner"></div>
   
   <script>
 
@@ -50,9 +52,13 @@
     const centerY = svgRealHeight / 2
     const radius = svgRealWidth / 2
 
+    const spinnerEl = document.getElementById('spinner')
+
     fetch('https://svg-fundamentals-awwwards-course.georgi-nikolov.com/api/favorite-movies')
       .then(res => res.json())
       .then(movieGenres => {
+        spinnerEl.classList.add('hidden')
+        
         let accumulatedAngle = 0
         // render pie chart slices
         movieGenres.forEach(({ color, name, count, share }, i) => {
