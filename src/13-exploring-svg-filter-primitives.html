@@ -17,6 +17,12 @@
       SVG Filters are used to add special effects to SVG graphics
     </p>
   </header>
+
+  <h1>
+    <span style="filter: url(#dropShadowFilter);">Hello SVG Filters on HTML</span>
+    &nbsp;&nbsp;
+    <span style="filter: url(#displacementMap);">Hello SVG Filters on HTML</span>
+  </h1>
   
   <div id="container">
     <svg
@@ -25,12 +31,158 @@
       viewBox="0 0 600 600"
       width="600"
       height="600"
-    >
+    > 
+      <filter
+        id="dropShadowFilter"
+        x="-30%"
+        y="-30%"
+        width="160%"
+        height="160%"
+      >
+        <feGaussianBlur
+          in="SourceAlpha"
+          stdDeviation="5"
+          result="BLUR"
+        >
+          <animate
+            attributeName="stdDeviation"
+            dur="2s"
+            values="1;10;1;"
+            repeatCount="indefinite"
+          />
+        </feGaussianBlur>
+        <!--
+          "in" attribute is not required in this case
+          by default an input to a svg filter primitive is the result
+          of the previous one
+        -->
+        <feColorMatrix
+          in="BLUR"
+          type="matrix"
+          values="1 0 0 0 0
+                  0 1 0 0 0
+                  0 0 1 0 0
+                  0 0 0 0.4 0"
+          result="ALPHA_TRANSFORMED_BLUR"
+        />
+        <feOffset
+          in="ALPHA_TRANSFORMED_BLUR"
+          result="OFFSET_BLUR"
+        >
+          <animate
+            attributeName="dx"
+            dur="2s"
+            values="5;-5;5;"
+            repeatCount="indefinite"
+            additive="sum"
+          />
+          <animate
+            attributeName="dy"
+            dur="2s"
+            values="5;-5;5;"
+            repeatCount="indefinite"
+            additive="sum"
+          />
+        </feOffset>
+        <feMerge>
+          <feMergeNode in="OFFSET_BLUR" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+
+      <filter
+        id="displacementMap"
+        x="-30%"
+        y="-30%"
+        width="160%"
+        height="160%"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.009"
+          numOctaves="2"
+          result="FRACTAL_NOISE"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="FRACTAL_NOISE"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        >
+          <animate
+            attributeName="scale"
+            values="10;50;10;"
+            dur="5s"
+            repeatCount="indefinite"
+          />
+        </feDisplacementMap>
+      </filter>
+
+      <filter
+        id="displacementMap2"
+        x="-30%"
+        y="-30%"
+        width="160%"
+        height="160%"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.09"
+          numOctaves="2"
+          result="FRACTAL_NOISE"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="FRACTAL_NOISE"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        >
+          <animate
+            attributeName="scale"
+            values="1;50;1;"
+            dur="5s"
+            repeatCount="indefinite"
+          />
+        </feDisplacementMap>
+      </filter>
+      
+      <circle
+        cx="100"
+        cy="100"
+        r="60"
+        fill="green"
+        filter="url(#dropShadowFilter)"
+      />
+
+      <g style="filter: url(#displacementMap)">
+        <rect
+          x="100"
+          y="300"
+          width="400"
+          height="80"
+          fill="orange"
+        />
+        <text
+          x="300"
+          y="355"
+          font-size="40px"
+          text-anchor="middle"
+        >
+          This is my SVG text
+        </text>
+      </g>
+
+      <path
+        filter="url(#displacementMap2)"
+        d="M 100 500 l 40 20 l 40 -20 l 40 20 l 40 -20 l 40 20 l 40 -20 l 40 20 l 40 -20 l 40 20 l 40 -20 l 40 20"
+        stroke="black"
+        stroke-width="10"
+        fill="none"
+      />
 
     </svg>
   </div>
-  
-  
 
 </body>
 </html>
